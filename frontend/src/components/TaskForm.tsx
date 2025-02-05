@@ -1,117 +1,177 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addTask, updateTask } from "../redux/slices/taskSlice";
+import { createTask, updateTask as apiUpdateTask } from "../services/api";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  Button,
+  CircularProgress,
+  IconButton,
+  Alert,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface TaskFormProps {
-  task?: { _id: string; title: string; description: string; completed: boolean };
-  onClose: () => void;
+  task?: {
+    _id: string;
+    title: string;
+    description: string;
+    completed: boolean;
+  };
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  token: string;
 }
 
-const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ task, open, setOpen, token }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    completed: false
+    completed: false,
   });
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (task) {
       setFormData({
         title: task.title,
         description: task.description,
-        completed: task.completed
+        completed: task.completed,
       });
     } else {
       setFormData({ title: "", description: "", completed: false });
     }
   }, [task]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "completed" ? checked : value,
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (task) {
-      dispatch(updateTask({ ...task, ...formData }));
-    } else {
-      dispatch(addTask({ _id: Date.now().toString(), ...formData }));
+    setError(null);
+    setLoading(true);
+
+    try {
+      let response;
+      if (task) {
+        response = await apiUpdateTask(task._id, formData, token);
+        dispatch(updateTask(response.data));
+      } else {
+        response = await createTask(formData, token);
+        dispatch(addTask(response.data));
+      }
+      setOpen(false);
+    } catch (error: any) {
+      console.error("Error:", error.response || error.message);
+      if (error.response) {
+        setError(
+          error.response.data.message ||
+            "Something went wrong. Please try again."
+        );
+      } else if (error.message) {
+        setError("Network error. Please check your internet connection.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false);
     }
-    onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md space-y-4 shadow-xl">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            {task ? "Edit Task" : "Create Task"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-            <input
-              type="text"
-              name="title"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={formData.title}
-              onChange={handleChange}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea
-              name="description"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={3}
-              value={formData.description}
-              onChange={handleChange}
-            />
-          </div>
-          
-          <div className="flex items-center">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
+    <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ m: 0, p: 2 }}>
+        {task ? "Edit Task" : "Create Task"}
+        <IconButton
+          aria-label="close"
+          onClick={() => setOpen(false)}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent dividers>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+            variant="outlined"
+          />
+
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            variant="outlined"
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
                 name="completed"
                 checked={formData.completed}
-                onChange={(e) => setFormData(prev => ({ ...prev, completed: e.target.checked }))}
-                className="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                onChange={handleChange}
+                color="primary"
               />
-              <span className="text-gray-700">Completed</span>
-            </label>
-          </div>
+            }
+            label="Completed"
+            sx={{ mt: 1 }}
+          />
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-            >
+          <DialogActions sx={{ mt: 2 }}>
+            <Button onClick={() => setOpen(false)} color="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              color="primary"
+              variant="contained"
+              disabled={loading}
+              startIcon={
+                loading && <CircularProgress size={20} color="inherit" />
+              }
             >
               {task ? "Update Task" : "Create Task"}
-            </button>
-          </div>
+            </Button>
+          </DialogActions>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { logout } from "../redux/slices/authSlice";
-import { FiMenu, FiX, FiUser, FiLogOut, FiHome } from "react-icons/fi"; // Icons
+import { FiMenu, FiX, FiUser, FiLogOut, FiHome } from "react-icons/fi"; 
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,7 +22,6 @@ const Navbar = () => {
     <div className="relative p-[2px] bg-gradient-to-r from-blue-500 to-purple-500 rounded-[12px] shadow-lg">
       <nav className="bg-white/20 backdrop-blur-lg rounded-[10px] px-6 py-3">
         <div className="container mx-auto flex justify-between items-center">
-          {/* Logo */}
           <Link
             to="/"
             className="text-white text-2xl font-bold tracking-wide flex items-center gap-2"

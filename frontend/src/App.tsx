@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./utils/PrivateRoute";
 import Navbar from "./components/Navbar";
+import { Button } from "@material-tailwind/react";
 
 function App() {
   return (

@@ -24,6 +24,7 @@ const taskSlice = createSlice({
 
     // Add a new task
     addTask: (state, action: PayloadAction<Task>) => {
+      console.log(state?.tasks);
       state.tasks.push(action.payload);
     },
 
