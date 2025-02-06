@@ -1,12 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Tooltip, Typography } from "@material-tailwind/react";
-// import { CheckCircleIcon, XCircleIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { BiCheckCircle, BiXCircle, BiPencil, BiTrash } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { deleteTask, toggleCompletion } from "../redux/slices/taskSlice";
 import {
-  fetchTasks,
   deleteUserTask,
   toggleTaskCompletion,
 } from "../services/api";
@@ -49,7 +47,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEditClick, token }) => {
   const handleToggleCompletion = async (id: string) => {
     try {
       await toggleTaskCompletion(id, token);
-      dispatch(toggleCompletion(id)); // Refresh task list
+      dispatch(toggleCompletion(id));
       toast.success("Task status updated!");
     } catch (error: any) {
       console.error("Error toggling task completion:", error);
@@ -86,22 +84,24 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEditClick, token }) => {
             </Typography>
           )}
         </div>
-        <button
-          onClick={() => handleToggleCompletion(task._id)}
-          className={`p-2 rounded-full hover:bg-opacity-20 transition-colors
+        <Tooltip content={`Toggle Task to ${ task.completed?'Incomplete': 'complete'}`} placement="top">
+          <Button
+            onClick={() => handleToggleCompletion(task._id)}
+            className={`p-2 rounded-full hover:bg-opacity-20 transition-colors
             ${
               task.completed
                 ? "text-green-500 hover:bg-green-500"
                 : "text-blue-500 hover:bg-blue-500"
             }
           `}
-        >
-          {task.completed ? (
-            <BiCheckCircle className="w-6 h-6" />
-          ) : (
-            <BiXCircle className="w-6 h-6" />
-          )}
-        </button>
+          >
+            {task.completed ? (
+              <BiCheckCircle className="w-6 h-6" />
+            ) : (
+              <BiXCircle className="w-6 h-6" />
+            )}
+          </Button>
+        </Tooltip>
       </div>
 
       <div className="flex items-center justify-end gap-2 border-t pt-3">

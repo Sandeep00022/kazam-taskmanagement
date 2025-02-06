@@ -16,6 +16,6 @@ router.get("/", protect, getTasks);
 router.get("/:id", protect, getTaskById);
 router.put("/:id", protect, updateTask);
 router.delete("/:id", protect, deleteTask);
-router.patch("/:id/toggle", protect, toggleTaskCompletion);
+router.put("/:id/toggle", protect, toggleTaskCompletion);
 
 export default router;

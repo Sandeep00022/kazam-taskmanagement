@@ -24,12 +24,19 @@ interface TaskFormProps {
     description: string;
     completed: boolean;
   };
+  setSelectedTask: (task: null) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
   token: string;
 }
 
-const TaskForm: React.FC<TaskFormProps> = ({ task, open, setOpen, token }) => {
+const TaskForm: React.FC<TaskFormProps> = ({
+  task,
+  open,
+  setOpen,
+  token,
+  setSelectedTask,
+}) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     title: "",
@@ -68,10 +75,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, open, setOpen, token }) => {
       let response;
       if (task) {
         response = await apiUpdateTask(task._id, formData, token);
+        setFormData({ title: "", description: "", completed: false });
         dispatch(updateTask(response.data));
+        setSelectedTask(null);
       } else {
         response = await createTask(formData, token);
         dispatch(addTask(response.data));
+        setFormData({ title: "", description: "", completed: false });
       }
       setOpen(false);
     } catch (error: any) {
@@ -92,7 +102,15 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, open, setOpen, token }) => {
   };
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={() => {
+        setOpen(false);
+        setSelectedTask(null);
+      }}
+      fullWidth
+      maxWidth="sm"
+    >
       <DialogTitle sx={{ m: 0, p: 2 }}>
         {task ? "Edit Task" : "Create Task"}
         <IconButton
@@ -154,7 +172,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, open, setOpen, token }) => {
           />
 
           <DialogActions sx={{ mt: 2 }}>
-            <Button onClick={() => setOpen(false)} color="secondary">
+            <Button
+              onClick={() => {
+                setOpen(false);
+                setSelectedTask(null);
+              }}
+              color="secondary"
+            >
               Cancel
             </Button>
             <Button

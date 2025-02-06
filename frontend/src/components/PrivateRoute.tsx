@@ -8,9 +8,11 @@ interface ProtectedRouteProps {
 }
 
 const PrivateRoute = ({ children }: ProtectedRouteProps) => {
-  const token = useSelector((state: RootState) => state.auth.token) || localStorage.getItem("token");
+  const token =
+    useSelector((state: RootState) => state.auth.token) ||
+    localStorage.getItem("token");
 
-  return token ? <>{children}</> : <Navigate to="/login" replace />;
+  return token ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 export default PrivateRoute;

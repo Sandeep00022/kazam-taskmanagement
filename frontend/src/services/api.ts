@@ -50,7 +50,7 @@ export const deleteUserTask = async (taskId: string, token: string) => {
 };
 
 export const toggleTaskCompletion = async (taskId: string, token: string) => {
-  return await axios.patch(`${API_URL}/tasks/${taskId}/toggle`, {}, {
+  return await axios.put(`${API_URL}/tasks/${taskId}/toggle`, {}, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };

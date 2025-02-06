@@ -3,9 +3,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-import PrivateRoute from "./utils/PrivateRoute";
+import PrivateRoute from "./components/PrivateRoute";
 import Navbar from "./components/Navbar";
 import { Button } from "@material-tailwind/react";
+import About from "./pages/About";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         }
       />
       <Route path="*" element={<NotFound />} />
+      <Route path="/about" element={<About />} />
     </Routes>
     </>
   );
