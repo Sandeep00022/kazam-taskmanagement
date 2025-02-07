@@ -7,17 +7,24 @@ import { Link, useNavigate } from "react-router-dom";
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>(""); 
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true); 
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setError(
+        "🚀 The server is waking up... This may take a few seconds. Please wait! (Gotta love free hosting 😆)"
+      );
+    }, 3000);
     try {
       const response = await loginUser({ email, password });
+      clearTimeout(timeout);
       localStorage.setItem("token", response.data.token);
       dispatch(setToken(response.data.token));
       navigate("/dashboard");
@@ -29,7 +36,7 @@ const Login: React.FC = () => {
         setError("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 

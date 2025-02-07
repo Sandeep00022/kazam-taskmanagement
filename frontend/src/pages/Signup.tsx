@@ -26,8 +26,16 @@ const Signup: React.FC = () => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    const timeout = setTimeout(() => {
+      setError(
+        "🚀 The server is waking up... This may take a few seconds. Please wait! (Gotta love free hosting 😆)"
+      );
+    }, 3000);
+
     try {
       await registerUser(formData);
+       clearTimeout(timeout);
       navigate("/");
     } catch (error: any) {
       console.error("Signup failed", error);
