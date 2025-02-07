@@ -15,6 +15,7 @@ const Signup: React.FC = () => {
     password: "",
   });
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,16 +25,19 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
     try {
       await registerUser(formData);
       navigate("/");
     } catch (error: any) {
-        console.error("Signup failed", error);
-        if (error.response?.data?.message) {
-          setError(error.response.data.message);
-        } else {
-          setError("An unexpected error occurred. Please try again.");
-        }
+      console.error("Signup failed", error);
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,10 +97,15 @@ const Signup: React.FC = () => {
                 />
               </div>
               <button
-                className="bg-gradient-to-r dark:text-gray-300 from-blue-500 to-purple-500 shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                className="bg-gradient-to-r dark:text-gray-300 from-blue-500 to-purple-500 shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out relative"
                 type="submit"
+                disabled={isLoading}
               >
-                SIGN UP
+                {isLoading ? (
+                  <div className="w-5 h-5 border-4 border-t-4 border-transparent border-t-white rounded-full animate-spin mx-auto" />
+                ) : (
+                  "SIGN UP"
+                )}
               </button>
             </form>
             <div className="flex flex-col mt-4 items-center justify-center text-sm">

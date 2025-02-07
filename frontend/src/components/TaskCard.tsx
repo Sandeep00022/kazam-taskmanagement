@@ -1,13 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { Button, Tooltip, Typography } from "@material-tailwind/react";
+import { Tooltip } from "@material-tailwind/react";
 import { BiCheckCircle, BiXCircle, BiPencil, BiTrash } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { deleteTask, toggleCompletion } from "../redux/slices/taskSlice";
-import {
-  deleteUserTask,
-  toggleTaskCompletion,
-} from "../services/api";
+import { deleteUserTask, toggleTaskCompletion } from "../services/api";
 
 interface Task {
   _id: string;
@@ -19,7 +16,7 @@ interface Task {
 interface TaskCardProps {
   task: Task;
   onEditClick: (task: Task) => void;
-  token: string;
+  token: string | null;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEditClick, token }) => {
@@ -65,27 +62,30 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEditClick, token }) => {
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <Typography
-            variant="h6"
+          <h6
             className={`font-semibold text-gray-800 ${
               task.completed ? "line-through text-gray-400" : ""
             }`}
           >
             {task.title}
-          </Typography>
+          </h6>
           {task.description && (
-            <Typography
-              variant="paragraph"
+            <p
               className={`text-gray-600 mt-1 text-sm ${
                 task.completed ? "line-through text-gray-400" : ""
               }`}
             >
               {task.description}
-            </Typography>
+            </p>
           )}
         </div>
-        <Tooltip content={`Toggle Task to ${ task.completed?'Incomplete': 'complete'}`} placement="top">
-          <Button
+        <Tooltip
+          content={`Toggle Task to ${
+            task.completed ? "Incomplete" : "complete"
+          }`}
+          placement="top"
+        >
+          <button
             onClick={() => handleToggleCompletion(task._id)}
             className={`p-2 rounded-full hover:bg-opacity-20 transition-colors
             ${
@@ -100,28 +100,26 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEditClick, token }) => {
             ) : (
               <BiXCircle className="w-6 h-6" />
             )}
-          </Button>
+          </button>
         </Tooltip>
       </div>
 
       <div className="flex items-center justify-end gap-2 border-t pt-3">
         <Tooltip content="Edit Task" placement="top">
-          <Button
-            variant="text"
+          <button
             onClick={() => onEditClick(task)}
             className="rounded-full p-2 hover:bg-yellow-50 text-yellow-600"
           >
             <BiPencil className="w-5 h-5" />
-          </Button>
+          </button>
         </Tooltip>
         <Tooltip content="Delete Task" placement="top">
-          <Button
-            variant="text"
+          <button
             onClick={() => handleDeleteTask(task._id)}
             className="rounded-full p-2 hover:bg-red-50 text-red-600"
           >
             <BiTrash className="w-5 h-5" />
-          </Button>
+          </button>
         </Tooltip>
       </div>
     </div>

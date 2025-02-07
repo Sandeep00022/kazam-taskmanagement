@@ -23,11 +23,11 @@ interface TaskFormProps {
     title: string;
     description: string;
     completed: boolean;
-  };
+  } | null;
   setSelectedTask: (task: null) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
-  token: string;
+  token: string | null;
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({

@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 
-interface Task {
-  _id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-}
 
 interface TaskSearchProps {
-  tasks: Task[];
   onSearch: (searchTerm: string) => void;
 }
 

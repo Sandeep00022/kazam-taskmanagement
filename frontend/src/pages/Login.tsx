@@ -7,13 +7,15 @@ import { Link, useNavigate } from "react-router-dom";
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>(""); // Error state
+  const [error, setError] = useState<string>(""); 
+  const [loading, setLoading] = useState<boolean>(false); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true); 
     try {
       const response = await loginUser({ email, password });
       localStorage.setItem("token", response.data.token);
@@ -26,6 +28,8 @@ const Login: React.FC = () => {
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -81,8 +85,13 @@ const Login: React.FC = () => {
               <button
                 className="bg-gradient-to-r dark:text-gray-300 from-blue-500 to-purple-500 shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
+                disabled={loading}
               >
-                LOG IN
+                {loading ? (
+                  <div className="w-5 h-5 border-4 border-t-4 border-transparent border-t-white rounded-full animate-spin mx-auto" />
+                ) : (
+                  "LOG IN"
+                )}
               </button>
             </form>
             <div className="flex flex-col mt-4 items-center justify-center text-sm">

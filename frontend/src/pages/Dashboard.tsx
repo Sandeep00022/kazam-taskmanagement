@@ -1,13 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { Button } from "@material-tailwind/react";
-import {
-  setTasks,
-  deleteTask,
-  toggleCompletion,
-} from "../redux/slices/taskSlice";
+import { setTasks } from "../redux/slices/taskSlice";
 import TaskItem from "../components/TaskItem";
 import TaskForm from "../components/TaskForm";
 import { fetchTasks } from "../services/api";
@@ -28,7 +22,7 @@ const Dashboard: React.FC = () => {
     completed: boolean;
   } | null>(null);
 
-  const token =
+  const token: string | null =
     useSelector((state: RootState) => state.auth.token) ||
     localStorage.getItem("token");
 
@@ -79,12 +73,12 @@ const Dashboard: React.FC = () => {
           <div className="w-full sm:max-w-md">
             <TaskSearch onSearch={handleSearch} />
           </div>
-          <Button
+          <button
             onClick={() => setOpen(true)}
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md"
           >
             Add Task +
-          </Button>
+          </button>
         </div>
 
         {error && (
