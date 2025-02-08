@@ -7,12 +7,14 @@ import TaskForm from "../components/TaskForm";
 import { fetchTasks } from "../services/api";
 import TaskSearch from "../components/TaskSearch";
 import { getRandomTaskQuote } from "../utils/randomQuotes";
+import TaskFilter from "../components/TaskFilter";
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
   const [filteredTasks, setFilteredTasks] = useState<any[]>([]);
   const [randomQuote, setRandomQuote] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("all");
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>("");
   const [selectedTask, setSelectedTask] = useState<{
@@ -57,6 +59,15 @@ const Dashboard: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    
+    if (filterType === "completed") {
+      setFilteredTasks(tasks.filter((task) => task.completed))
+    } else if (filterType === "pending") {
+      setFilteredTasks(tasks.filter((task) => !task.completed))
+    }
+  }, [tasks, filterType, filteredTasks]);
+
+  useEffect(() => {
     setFilteredTasks(tasks);
     setRandomQuote(getRandomTaskQuote());
   }, [tasks]);
@@ -73,6 +84,7 @@ const Dashboard: React.FC = () => {
           <div className="w-full sm:max-w-md">
             <TaskSearch onSearch={handleSearch} />
           </div>
+          <TaskFilter onFilter={setFilterType} />
           <button
             onClick={() => setOpen(true)}
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md"
